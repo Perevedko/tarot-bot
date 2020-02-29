@@ -1,3 +1,4 @@
 en:
-  greeting_message: "Hi! Telegram is awesome!"
+  greeting_message: "/tarot\n/cards N\nwhere 1 ≤ N ≤ 78"
   farewell_message: "Bye! I'll miss you :("
+  argument_error_message: "Wrong argument"

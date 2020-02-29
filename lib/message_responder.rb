@@ -25,6 +25,15 @@ class MessageResponder
     on %r{^/tarot} do
       send_tarot_images
     end
+
+    on %r{^/cards (\d+)} do |number|
+      n = Integer(number) rescue nil
+      if n && 1 <= n && n <= Tarot.full_deck.count
+        send_tarot_images(n)
+      else
+        answer_with_argument_error_message
+      end
+    end
   end
 
   private
@@ -52,10 +61,18 @@ class MessageResponder
     answer_with_message I18n.t('farewell_message')
   end
 
-  def send_tarot_images
-    Tarot.full_deck.sample(3).map(&:image_location).map do |image_path|
-      answer_with_image(image_path)
+  def answer_with_argument_error_message
+    answer_with_message I18n.t('argument_error_message')
+  end
+
+  def send_tarot_images(n = 3)
+    Tarot.full_deck.sample(n).map do |card|
+      send_tarot(card)
     end
+  end
+
+  def send_tarot(card)
+    MessageSender.new(bot: bot, chat: message.chat, tarot: card).send
   end
 
   def answer_with_image(image_path)

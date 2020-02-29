@@ -1,4 +1,5 @@
 require 'logger'
+require 'pry'
 
 require './lib/database_connector'
 
