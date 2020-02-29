@@ -1,5 +1,6 @@
 require './models/user'
 require './lib/message_sender'
+require './lib/tarot'
 
 class MessageResponder
   attr_reader :message
@@ -13,12 +14,16 @@ class MessageResponder
   end
 
   def respond
-    on /^\/start/ do
+    on %r{^/start} do
       answer_with_greeting_message
     end
 
-    on /^\/stop/ do
+    on %r{^/stop} do
       answer_with_farewell_message
+    end
+
+    on %r{^/tarot} do
+      send_tarot_images
     end
   end
 
@@ -45,6 +50,16 @@ class MessageResponder
 
   def answer_with_farewell_message
     answer_with_message I18n.t('farewell_message')
+  end
+
+  def send_tarot_images
+    Tarot.full_deck.sample(3).map(&:image_location).map do |image_path|
+      answer_with_image(image_path)
+    end
+  end
+
+  def answer_with_image(image_path)
+    MessageSender.new(bot: bot, chat: message.chat, image: image_path).send
   end
 
   def answer_with_message(text)

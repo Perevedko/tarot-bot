@@ -7,18 +7,23 @@ class MessageSender
   attr_reader :chat
   attr_reader :answers
   attr_reader :logger
+  attr_reader :image
 
   def initialize(options)
     @bot = options[:bot]
     @text = options[:text]
     @chat = options[:chat]
     @answers = options[:answers]
+    @image = options[:image]
     @logger = AppConfigurator.new.get_logger
   end
 
   def send
-    if reply_markup
+    case
+    when reply_markup
       bot.api.send_message(chat_id: chat.id, text: text, reply_markup: reply_markup)
+    when image
+      bot.api.send_photo(chat_id: chat.id, photo: Faraday::UploadIO.new(image, 'image/jpeg'))
     else
       bot.api.send_message(chat_id: chat.id, text: text)
     end

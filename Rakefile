@@ -32,3 +32,19 @@ namespace :db do
     ActiveRecord::Base.connection.drop_database(connection_details.fetch('database'))
   end
 end
+
+task :console do
+  require 'pry'
+  require 'telegram/bot'
+  require_relative 'lib/app_configurator'
+  config = AppConfigurator.new
+  config.configure
+  dir = File.dirname(__FILE__)
+  Dir["#{dir}/*.rb",
+      "#{dir}/models/*.rb",
+      "#{dir}/lib/*.rb"
+  ].each(&method(:require))
+  Pry.start
+end
+
+task :c => :console
